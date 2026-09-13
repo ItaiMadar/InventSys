@@ -2,27 +2,24 @@
 
 ESP32/Arduino firmware for a Kuramoto-model demonstration. Three capacitive
 electrodes recognize directional swipes, a fourth capacitive button chooses the
-controlled parameter, and five PWM LEDs visualize the oscillator phases.
+controlled parameter (flash frequency or coupling strength),
+and five PWM LEDs visualize the oscillator phases.
 
 ## Controls
 
-| Mode | Forward swipe (`1 -> 2 -> 3`) | Reverse swipe (`3 -> 2 -> 1`) |
+| Mode | Up swipe (`3 -> 2 -> 1`) | Down swipe (`1 -> 2 -> 3`) |
 | --- | --- | --- |
 | Frequency | Increase frequency | Decrease frequency |
 | K | Increase coupling | Decrease coupling |
 
-The mode button toggles between frequency and K. The selected mode and both
-parameter values persist. Each touch electrode uses the same small derivative-
-threshold detector; there is no combined input state machine or cross-talk
-guard.
+A faster swipe corresponds to a larger change:
+$$
+\\Delta = C / (1 + sqrt(swipeDuration),
+$$
+where C is a scaling parameter which could be unique to frequency or K.
 
-The speed-dependent change preserves the original program's formula:
-
-```text
-durationSeconds = swipeDurationMs / 1000
-speedFactor = 1 / (1 + sqrt(durationSeconds))
-change = swipeGain * speedFactor
-```
+The mode button toggles between frequency and K. Each touch electrode uses a derivative-
+threshold detector.
 
 ## Files
 
@@ -32,7 +29,7 @@ change = swipeGain * speedFactor
 | `Config.h` | All hardware and tuning values |
 | `TouchButton.h` | Header-only capacitive press detector |
 | `ParameterController.h` | Header-only mode and parameter adjustment logic |
-| `KuramotoLedSystem.*` | Physics integration, order parameter, and LED PWM |
+| `KuramotoLedSystem.*` | Physics integration and rendering |
 
 ## Default pins
 
@@ -44,15 +41,17 @@ change = swipeGain * speedFactor
 | Mode button | 13 |
 | LEDs 1-5 | 15, 2, 4, 16, 17 |
 
-GPIO 2, 4, and 15 are ESP32 boot-strapping pins. If the LED circuitry prevents
-booting, move those LEDs to ordinary output pins and edit `Config.h`.
+## Kuramoto Model
 
-## Arduino IDE
+The Kuramoto model is perhaps the most widely used model which describes the dynamics of synchronization.
+The simplest form of the model assumes each two oscillators are coupled with coupling constant $K$, and the dynamics are given by:
+$$
+\frac{d \theta_i}{dt} = \omega_i + \frac{K}{N} \sum_{j \neq i}^N \sin{(\theta_j - \theta_i)} \ ,
+$$
+where $N$ is the number of oscillators, and $\theta_i, \omega_i$ are the angle and the natural frequency of the $i$-th oscillator, respectively.
 
-1. Keep all files in a folder named exactly `CoupledOscillator`.
-2. Open `CoupledOscillator.ino`.
-3. Select the correct ESP32 board and port.
-4. Compile, upload, and open Serial Monitor at 115200 baud.
-
-On Windows, use a simple path such as `C:\Arduino\CoupledOscillator`. Avoid
-parentheses, ampersands, and unusual characters in the sketch path.
+The order parameter is:
+$$
+r = \frac{1}{N} \left| \sum_j^N e^{i \theta_j} \right| \ ,
+$$
+which vanishes when every oscillator has a random phase ($N \to \infty$), and equals 1 when all oscillators are phase-locked.
