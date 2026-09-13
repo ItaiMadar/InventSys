@@ -52,8 +52,8 @@ oscillators is coupled with coupling strength $K$. The phase dynamics are
 
 $$\frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{j\neq i}^{N}\sin\left(\theta_j-\theta_i\right).$$
 
-Here, $N$ is the number of oscillators, $\theta_i$ is the phase of oscillator
-$i$, and $\omega_i$ is its natural angular frequency.
+Here, $N$ is the number of oscillators, and $\theta_i$, $\omega_i$ is the phase and natural frequency of the
+$i$-th oscillator, respectively.
 
 The Kuramoto order parameter is
 
