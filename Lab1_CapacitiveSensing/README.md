@@ -1,6 +1,8 @@
 > [!IMPORTANT]
 > The majority of the code for this project was generated using ChatGPT, with clear implementation instructions provided by myself.
 
+[Lab 1 Demo](https://youtu.be/Ui3A2puXTH8)
+
 # Five-LED Coupled Oscillator
 
 ESP32/Arduino firmware for a Kuramoto-model demonstration. Three capacitive
