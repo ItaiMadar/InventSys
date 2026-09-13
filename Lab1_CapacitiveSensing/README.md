@@ -48,38 +48,21 @@ electrode uses a derivative-threshold detector.
 
 The Kuramoto model is one of the most widely used models for describing the
 dynamics of synchronization. Its simplest form assumes that every pair of
-oscillators is coupled with coupling strength \(K\). The phase dynamics are
+oscillators is coupled with coupling strength $K$. The phase dynamics are
 
-$$
-\frac{d\theta_i}{dt}
-=
-\omega_i
-+
-\frac{K}{N}
-\sum_{\substack{j=1 \\ j\neq i}}^{N}
-\sin\left(\theta_j-\theta_i\right),
-$$
+$$\frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{\substack{j=1 \\ j\neq i}}^{N}\sin\left(\theta_j-\theta_i\right).$$
 
-where \(N\) is the number of oscillators, \(\theta_i\) is the phase of
-oscillator \(i\), and \(\omega_i\) is its natural angular frequency.
+Here, $N$ is the number of oscillators, $\theta_i$ is the phase of oscillator
+$i$, and $\omega_i$ is its natural angular frequency.
 
 The Kuramoto order parameter is
 
-$$
-r
-=
-\frac{1}{N}
-\left|
-\sum_{j=1}^{N} e^{i\theta_j}
-\right|.
-$$
+$$r = \frac{1}{N}\left|\sum_{j=1}^{N}e^{i\theta_j}\right|.$$
 
 The order parameter satisfies
 
-$$
-0 \leq r \leq 1.
-$$
+$$0 \leq r \leq 1.$$
 
-For randomly distributed phases, \(r\) approaches zero as
-\(N\rightarrow\infty\). When all oscillators are perfectly phase-aligned,
-\(r=1\).
+For randomly distributed phases, $r$ approaches zero as
+$N\rightarrow\infty$. When all oscillators are perfectly phase-aligned,
+$r=1$.
