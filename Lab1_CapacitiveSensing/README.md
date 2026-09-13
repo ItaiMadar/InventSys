@@ -25,7 +25,7 @@ where \(T\) is the swipe duration and \(C\) is a scaling parameter. Separate
 values of \(C\) may be used for frequency and coupling strength.
 
 The mode button toggles between frequency and coupling control. Each touch
-electrode uses a derivative-threshold detector.
+electrode uses a derivative-threshold detector; no calibration needed.
 
 ## Files
 
