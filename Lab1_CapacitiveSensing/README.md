@@ -52,7 +52,7 @@ oscillators is coupled with coupling strength $K$. The phase dynamics are
 
 $$\frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{j\neq i}^{N}\sin\left(\theta_j-\theta_i\right).$$
 
-Here, $N$ is the number of oscillators, and $\theta_i$, $\omega_i$ is the phase and natural frequency of the
+Here, $N$ is the number of oscillators, and $\theta_i$, $\omega_i$ are the phase and natural frequency of the
 $i$-th oscillator, respectively.
 
 The Kuramoto order parameter is
@@ -66,3 +66,5 @@ $$0 \leq r \leq 1.$$
 For randomly distributed phases, $r$ approaches zero as
 $N\rightarrow\infty$. When all oscillators are perfectly phase-aligned,
 $r=1$.
+
+For an intuitive video: https://www.youtube.com/watch?v=T58lGKREubo
