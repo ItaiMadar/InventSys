@@ -50,7 +50,7 @@ The Kuramoto model is one of the most widely used models for describing the
 dynamics of synchronization. Its simplest form assumes that every pair of
 oscillators is coupled with coupling strength $K$. The phase dynamics are
 
-$$\frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{\substack{j=1 \\ j\neq i}}^{N}\sin\left(\theta_j-\theta_i\right).$$
+$$\frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{j\neq i}}^{N}\sin\left(\theta_j-\theta_i\right).$$
 
 Here, $N$ is the number of oscillators, $\theta_i$ is the phase of oscillator
 $i$, and $\omega_i$ is its natural angular frequency.
