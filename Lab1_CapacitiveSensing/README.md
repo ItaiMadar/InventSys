@@ -1,37 +1,40 @@
 # Five-LED Coupled Oscillator
 
 ESP32/Arduino firmware for a Kuramoto-model demonstration. Three capacitive
-electrodes recognize directional swipes, a fourth capacitive button chooses the
-controlled parameter (flash frequency or coupling strength),
-and five PWM LEDs visualize the oscillator phases.
+electrodes recognize directional swipes, a fourth capacitive button selects the
+controlled parameter—flash frequency or coupling strength—and five PWM LEDs
+visualize the oscillator phases.
 
 ## Controls
 
-| Mode | Up swipe (`3 -> 2 -> 1`) | Down swipe (`1 -> 2 -> 3`) |
+| Mode | Up swipe (`3 → 2 → 1`) | Down swipe (`1 → 2 → 3`) |
 | --- | --- | --- |
 | Frequency | Increase frequency | Decrease frequency |
-| K | Increase coupling | Decrease coupling |
+| Coupling strength \(K\) | Increase coupling | Decrease coupling |
 
-A faster swipe corresponds to a larger change:
-$$
-\\Delta = C / (1 + sqrt(swipeDuration),
-$$
-where C is a scaling parameter which could be unique to frequency or K.
+A faster swipe produces a larger parameter change:
 
-The mode button toggles between frequency and K. Each touch electrode uses a derivative-
-threshold detector.
+$$
+\Delta = \frac{C}{1+\sqrt{T}},
+$$
+
+where \(T\) is the swipe duration and \(C\) is a scaling parameter. Separate
+values of \(C\) may be used for frequency and coupling strength.
+
+The mode button toggles between frequency and coupling control. Each touch
+electrode uses a derivative-threshold detector.
 
 ## Files
 
 | File | Responsibility |
 | --- | --- |
-| `CoupledOscillator.ino` | Direct swipe timing, mode toggle, and diagnostics |
-| `Config.h` | All hardware and tuning values |
-| `TouchButton.h` | Header-only capacitive press detector |
-| `ParameterController.h` | Header-only mode and parameter adjustment logic |
-| `KuramotoLedSystem.*` | Physics integration and rendering |
+| `CoupledOscillator.ino` | Direct swipe timing, mode selection, and diagnostics |
+| `Config.h` | Hardware assignments and tuning parameters |
+| `TouchButton.h` | Header-only capacitive-press detector |
+| `ParameterController.h` | Header-only mode and parameter-adjustment logic |
+| `KuramotoLedSystem.h` and `.cpp` | Physics integration and LED rendering |
 
-## Default pins
+## Default Pins
 
 | Part | GPIO |
 | --- | --- |
@@ -39,19 +42,44 @@ threshold detector.
 | Swipe electrode 2 | 33 |
 | Swipe electrode 3 | 32 |
 | Mode button | 13 |
-| LEDs 1-5 | 15, 2, 4, 16, 17 |
+| LEDs 1–5 | 15, 2, 4, 16, 17 |
 
 ## Kuramoto Model
 
-The Kuramoto model is perhaps the most widely used model which describes the dynamics of synchronization.
-The simplest form of the model assumes each two oscillators are coupled with coupling constant $K$, and the dynamics are given by:
-$$
-\frac{d \theta_i}{dt} = \omega_i + \frac{K}{N} \sum_{j \neq i}^N \sin{(\theta_j - \theta_i)} \ ,
-$$
-where $N$ is the number of oscillators, and $\theta_i, \omega_i$ are the angle and the natural frequency of the $i$-th oscillator, respectively.
+The Kuramoto model is one of the most widely used models for describing the
+dynamics of synchronization. Its simplest form assumes that every pair of
+oscillators is coupled with coupling strength \(K\). The phase dynamics are
 
-The order parameter is:
 $$
-r = \frac{1}{N} \left| \sum_j^N e^{i \theta_j} \right| \ ,
+\frac{d\theta_i}{dt}
+=
+\omega_i
++
+\frac{K}{N}
+\sum_{\substack{j=1 \\ j\neq i}}^{N}
+\sin\left(\theta_j-\theta_i\right),
 $$
-which vanishes when every oscillator has a random phase ($N \to \infty$), and equals 1 when all oscillators are phase-locked.
+
+where \(N\) is the number of oscillators, \(\theta_i\) is the phase of
+oscillator \(i\), and \(\omega_i\) is its natural angular frequency.
+
+The Kuramoto order parameter is
+
+$$
+r
+=
+\frac{1}{N}
+\left|
+\sum_{j=1}^{N} e^{i\theta_j}
+\right|.
+$$
+
+The order parameter satisfies
+
+$$
+0 \leq r \leq 1.
+$$
+
+For randomly distributed phases, \(r\) approaches zero as
+\(N\rightarrow\infty\). When all oscillators are perfectly phase-aligned,
+\(r=1\).
