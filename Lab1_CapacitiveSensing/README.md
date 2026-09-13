@@ -70,4 +70,4 @@ For randomly distributed phases, $r$ approaches zero as
 $N\rightarrow\infty$. When all oscillators are perfectly phase-aligned,
 $r=1$.
 
-For an intuitive video: https://www.youtube.com/watch?v=T58lGKREubo
+For a related demonstration: https://www.youtube.com/watch?v=T58lGKREubo
