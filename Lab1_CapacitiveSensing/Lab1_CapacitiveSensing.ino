@@ -3,11 +3,13 @@
 #include "ParameterController.h"
 #include "TouchButton.h"
 
+// Initialize frequencies of oscillators (will be randomized inside the oscillators class)
 float frequencyOffsets[Config::OscillatorCount];
 
 ParameterController parameters(Config::Parameters);
 KuramotoLedSystem oscillators(Config::LedPins, frequencyOffsets);
 
+// Initialize buttons
 TouchButton swipeButton1(Config::SwipeTouchPins[0],
                          Config::TouchDerivativeThreshold);
 TouchButton swipeButton2(Config::SwipeTouchPins[1],
@@ -26,6 +28,7 @@ const char* modeName() {
   return parameters.mode() == ControlMode::Frequency ? "frequency" : "K";
 }
 
+// Only detect swipes which go the the same direction
 void applySwipe(long delta1Ms, long delta2Ms) {
   if ((delta1Ms == 0) || (delta2Ms == 0) ||
       ((delta1Ms > 0) != (delta2Ms > 0))) {
@@ -50,6 +53,7 @@ void resetSwipe() {
   touchTime3 = 0;
 }
 
+// Swipe updates parameter values
 void updateControls(uint32_t nowMs) {
   if (modeButton.pressed()) {
     parameters.toggleMode();
@@ -111,6 +115,7 @@ void setup() {
   Serial.println("Control mode: frequency");
 }
 
+// Run model and loop over sensors to detect parameter changes
 void loop() {
   const uint32_t nowMs = millis();
 

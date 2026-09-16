@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+// Initialize random frequencies around base frequency, as well as physical oscillators and ghost oscillators.
 KuramotoLedSystem::KuramotoLedSystem(
     const uint8_t (&ledPins)[LEDCount],
     const float (&frequencyOffsetsHz)[Count]) {
@@ -21,6 +22,7 @@ void KuramotoLedSystem::begin() {
   }
 }
 
+// Advance oscillators in time and render.
 void KuramotoLedSystem::update(uint32_t nowMicros) {
   if (previousMicros_ == 0) {
     previousMicros_ = nowMicros;
@@ -41,6 +43,7 @@ void KuramotoLedSystem::update(uint32_t nowMicros) {
   render();
 }
 
+// The dynamic rules (ODE) for integration. dtheta_i = omega + (K/N) * sum_{i != j}( sin(theta_i - theta_j) )
 void KuramotoLedSystem::integrate(float dt) {
   float phaseRates[Count];
 
@@ -64,6 +67,7 @@ void KuramotoLedSystem::integrate(float dt) {
   }
 }
 
+// Render function that converts oscillator angle to LED intensity
 void KuramotoLedSystem::render() const {
   for (size_t i = 0; i < LEDCount; ++i) {
     float intensity = 0.5f * (sinf(phases_[i]) + 1.0f);
@@ -73,6 +77,7 @@ void KuramotoLedSystem::render() const {
   }
 }
 
+// Function to calculate the order parameter r = |sum_j(e^{i\theta_j})|
 float KuramotoLedSystem::orderParameter() const {
   float realPart = 0.0f;
   float imaginaryPart = 0.0f;

@@ -4,6 +4,8 @@
 
 #include "ParameterController.h"
 
+// All hard-coded configuration variables are here, except for {MeasurementCount} which is hardcoded in "TouchButton.h"
+
 namespace Config {
 
 constexpr size_t OscillatorCount = 50; // Above 50 performance drops significantly

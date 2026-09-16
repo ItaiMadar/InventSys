@@ -18,12 +18,13 @@ class KuramotoLedSystem {
   float orderParameter() const;
 
  private:
-  static constexpr float IntegrationStepSeconds = 0.005f;
+  static constexpr float IntegrationStepSeconds = 0.005f; // Integration step; recall that it should be lesser than the {LoopDelayMs} parameter. Ensures numerical stability.
   static constexpr float FlashSharpness = 8.0f;
 
   uint8_t ledPins_[Count];
   float offsetsHz_[Count];
   float phases_[Count];
+  // Base values for freq. and couplings are meaningless here because they are set by the values in "Config.h"
   float baseFrequencyHz_ = 1.0f;
   float coupling_ = 0.0f;
   uint32_t previousMicros_ = 0;

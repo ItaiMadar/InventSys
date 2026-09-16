@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <math.h>
 
+// Helper functions
+
 enum class ControlMode {
   Frequency,
   Coupling,
@@ -39,8 +41,8 @@ class ParameterController {
       return false;
     }
 
-    const float durationSeconds = static_cast<float>(durationMs) / 1000.0f;
-    const float speedFactor = 1.0f / (1.0f + sqrtf(durationSeconds));
+    const float durationSeconds = static_cast<float>(durationMs) / 1000.0f; 
+    const float speedFactor = 1.0f / (1.0f + sqrtf(durationSeconds)); // Arbitrary function that =1 for duration 0, and = 0 for infinite duration
     const float sign = static_cast<float>(direction);
 
     if (mode_ == ControlMode::Frequency) {
