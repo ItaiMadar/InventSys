@@ -1,0 +1,9 @@
+p5
+PySerial
+numpy
+scipy
+IPython
+ipykernel
+sounddevice
+matplotlib
+mido
