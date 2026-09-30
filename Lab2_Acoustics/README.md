@@ -21,6 +21,9 @@ Since this is implemented entirely in Python, it relies on various packages. The
 
 By calling "python -m tune_guitar" in the command line, the tuner is ready to go!
 
+> [!NOTE]
+> The automatic detection of microphone and ESP32 controller input was implemented in Windows, assuming default install location. If using IOS/Linux, your experience may vary!  
+
 ## Files
 
 | File | Responsibility |
