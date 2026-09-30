@@ -9,7 +9,7 @@ ESP32 firmware and a laptop as a (somewhat) functional guitar tuner. The laptop 
 
 ## Controls
 
-The tuner is initialized by using the command line: "python -m tune_guitar", with optional arguments:
+The tuner is initialized by using the command line: "python tune_guitar.py", with optional arguments:
 - --epsilon FLOAT (tolerance of the tuner, default 5.0)
 - snr-db FLOAT (sensitivity of the tuner, default 6.0)
 
@@ -19,10 +19,12 @@ Other important hardcoded variables appear in "tuner.py", which control the audi
 
 Since this is implemented entirely in Python, it relies on various packages. These are listen in "requirements.txt".
 
-By calling "python -m tune_guitar" in the command line, the tuner is ready to go!
+By calling "python tune_guitar.py" in the command line, the tuner is ready to go!
 
 > [!NOTE]
-> The automatic detection of microphone and ESP32 controller input was implemented in Windows, assuming default install location. If using IOS/Linux, your experience may vary!  
+> The automatic detection and interface with the microphone and ESP32 controller was implemented in Windows, assuming default arduino-cli install location. If using MacOS/Linux, your experience may vary!
+> **If this is the case, compile and upload "arduinoController.ino" manually using Arduino IDE. Close the IDE, then run: "python3 -m tune_guitar --no_upload --device {} --port {}" and input the audio capture device name or index, and ESP32 port.**
+> The audio capture device can be found using "python3 tune_guitar.py --list-devices". The port can be found via: "python -m serial.tools.list_ports".
 
 ## Files
 
