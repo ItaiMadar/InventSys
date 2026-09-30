@@ -21,7 +21,7 @@ Since this is implemented entirely in Python, it relies on various packages. The
 
 By calling "python tune_guitar.py" in the command line, the tuner is ready to go!
 
-> [!NOTE]
+> [!WARNING]
 > The automatic detection and interface with the microphone and ESP32 controller was implemented in Windows, assuming default arduino-cli install location. If using MacOS/Linux, your experience may vary!
 > 
 > **If this is the case, compile and upload "arduinoController.ino" manually using Arduino IDE. Close the IDE, then run: "python3 -m tune_guitar --no_upload --device {} --port {}" and input the audio capture device name or index, and ESP32 port.**
