@@ -1,7 +1,7 @@
 > [!IMPORTANT]
 > The majority of the code for this project was generated using ChatGPT, with clear implementation instructions provided by myself.
 
-[Lab 3 Demo](https://youtu.be/)
+[Lab 3 Demo](https://youtu.be/Zy5A5LE2F4o)
 
 # Reactive Vibration Chess Companion
 
