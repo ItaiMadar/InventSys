@@ -24,7 +24,7 @@ Print using your favorite slicer!
 
 |File|Responsibility|
 |-|-|
-|`grid\_generation.py`|Constructs the secret image, then generates the cipher and key grids.|
-|`stl\_mesh.py`|Generates contiguous STL meshes from two-dimensional Boolean grids.|
+|`grid_generation.py`|Constructs the secret image, then generates the cipher and key grids.|
+|`stl_mesh.py`|Generates contiguous STL meshes from two-dimensional Boolean grids.|
 |`config.py`|Hardcoded grid, mesh, and printer defaults.|
 |`gui.py`|Tkinter interface that coordinates the other three modules.|
