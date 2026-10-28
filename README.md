@@ -4,3 +4,5 @@
 [Lab 2 Demo](https://youtu.be/JBj5X3lEuSA)
 
 [Lab 3 Demo](https://youtu.be/Zy5A5LE2F4o)
+
+[Lab 4 Demo](https://youtu.be/W4u0QnQKcpg)
