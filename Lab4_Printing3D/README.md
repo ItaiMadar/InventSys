@@ -1,7 +1,7 @@
 > \[!IMPORTANT]
 > The majority of the code for this project was generated using ChatGPT, with clear implementation instructions provided by myself.
 
-[Lab 4 Demo](https://youtu.be/) #TODO: Update URL
+[Lab 4 Demo](https://youtu.be/W4u0QnQKcpg)
 
 # Printable Visual Cryptography
 
