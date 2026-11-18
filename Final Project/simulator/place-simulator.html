@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Physical r/place emulator</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: #111318; color: #f5f7fa; }
+    main { width: min(94vw, 760px); margin: 20px auto; display: grid; gap: 12px; }
+    header, .status, .cards { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
+    header { justify-content: space-between; }
+    h1 { margin: 0; font-size: 20px; }
+    button { padding: 8px 12px; border: 1px solid #596170; border-radius: 6px; background: #252a33; color: inherit; }
+    button:hover { background: #323946; }
+    .status { padding: 10px 12px; background: #1b1f27; border-radius: 7px; }
+    .status span { white-space: nowrap; }
+    .label { color: #9ea7b5; margin-right: 5px; }
+    #grid { display: grid; grid-template-columns: repeat(32, 1fr); gap: 2px; aspect-ratio: 1; padding: 3px; background: #252a33; }
+    .led { min-width: 0; min-height: 0; border-radius: 2px; background: #20242c; }
+    .preview { box-shadow: inset 0 0 0 2px #ffffff; }
+    .help, #message { color: #aeb6c2; margin: 0; }
+    #error { color: #ff8a8a; white-space: pre-wrap; }
+    @media (max-width: 540px) { #grid { gap: 1px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>32×32 board emulator</h1>
+      <p class="help">←/→ pixel · ↑/↓ color · Space confirm</p>
+    </div>
+    <div class="cards">
+      <button type="button" data-uid="USER-001">Tap USER-001</button>
+      <button type="button" data-uid="USER-002">Tap USER-002</button>
+    </div>
+  </header>
+  <div class="status" aria-live="polite">
+    <span><span class="label">State</span><strong id="state">LOADING</strong></span>
+    <span><span class="label">User</span><strong id="user">—</strong></span>
+    <span><span class="label">Pixel</span><strong id="position">—</strong></span>
+    <span><span class="label">Color</span><strong id="color">—</strong></span>
+  </div>
+  <div id="grid" role="grid" aria-label="32 by 32 LED board"></div>
+  <p id="message">Loading the compiled C++ state machine…</p>
+  <p id="error" role="alert"></p>
+</main>
+
+<script src="place-core.js"></script>
+<script>
+const WIDTH = 32;
+const HEIGHT = 32;
+const OFF = 255;
+const colors = [
+  { name: 'White', value: '#ffffff' },
+  { name: 'Red', value: '#f04452' },
+  { name: 'Green', value: '#33c36b' },
+  { name: 'Blue', value: '#3c82f6' },
+  { name: 'Yellow', value: '#f3c744' },
+  { name: 'Purple', value: '#aa72ed' }
+];
+const stateNames = ['IDLE', 'COOLDOWN_DENIED', 'PLACING', 'COMMITTING', 'ERROR'];
+const grid = document.querySelector('#grid');
+const cells = [];
+let api;
+let activeUid = '';
+let noticeTimer;
+let previousState = -1;
+
+for (let i = 0; i < WIDTH * HEIGHT; ++i) {
+  const cell = document.createElement('div');
+  cell.className = 'led';
+  cell.setAttribute('role', 'gridcell');
+  grid.appendChild(cell);
+  cells.push(cell);
+}
+
+function nowMs() { return Math.floor(performance.now()) >>> 0; }
+
+function bind(module) {
+  const fn = (name, result, args = []) => module.cwrap(name, result, args);
+  return {
+    create: fn('place_create', 'number', ['number','number','number','number','number','number','number']),
+    state: fn('place_state', 'number'),
+    scanCard: fn('place_scan_card', 'number', ['string','number']),
+    dismissCooldown: fn('place_dismiss_cooldown_notice', null),
+    setPreview: fn('place_set_preview', 'number', ['number','number','number']),
+    changeColor: fn('place_change_color', 'number', ['number','number']),
+    confirm: fn('place_confirm', 'number', ['number']),
+    finishCommit: fn('place_finish_commit', null, ['number']),
+    tick: fn('place_tick', null, ['number']),
+    previewX: fn('place_preview_x', 'number'),
+    previewY: fn('place_preview_y', 'number'),
+    selectedColor: fn('place_selected_color', 'number'),
+    previewColor: fn('place_preview_display_color', 'number', ['number']),
+    boardColor: fn('place_board_color', 'number', ['number']),
+    cooldownRemaining: fn('place_cooldown_remaining', 'number', ['string','number'])
+  };
+}
+
+function render() {
+  if (!api) return;
+  const time = nowMs();
+  const state = api.state();
+  if (previousState === 2 && state === 0 && activeUid) {
+    activeUid = '';
+    document.querySelector('#message').textContent = 'Session timed out. Tap a card to begin.';
+  }
+  previousState = state;
+  const placing = state === 2;
+  const px = api.previewX();
+  const py = api.previewY();
+  const previewIndex = py * WIDTH + px;
+  const previewColor = placing ? api.previewColor(time) : OFF;
+
+  for (let i = 0; i < cells.length; ++i) {
+    const color = placing && i === previewIndex ? previewColor : api.boardColor(i);
+    cells[i].style.background = color === OFF ? '#20242c' : colors[color].value;
+    cells[i].classList.toggle('preview', placing && i === previewIndex);
+  }
+  document.querySelector('#state').textContent = stateNames[state] || 'UNINITIALIZED';
+  document.querySelector('#user').textContent = activeUid || '—';
+  document.querySelector('#position').textContent = placing ? `${px}, ${py}` : '—';
+  const selected = api.selectedColor();
+  document.querySelector('#color').textContent = selected === OFF ? '—' : colors[selected].name;
+}
+
+function tapCard(uid) {
+  if (!api) return;
+  const result = api.scanCard(uid, nowMs());
+  if (result === 0) {
+    activeUid = uid;
+    document.querySelector('#message').textContent = 'Use the keyboard to place one pixel.';
+  } else if (result === 1) {
+    activeUid = uid;
+    const seconds = Math.ceil(api.cooldownRemaining(uid, nowMs()) / 1000);
+    document.querySelector('#message').textContent = `${uid} denied: ${seconds}s cooldown remaining.`;
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => {
+      api.dismissCooldown();
+      activeUid = '';
+      document.querySelector('#message').textContent = 'Tap a card to begin.';
+    }, 1600);
+  }
+}
+
+document.querySelectorAll('[data-uid]').forEach(button => {
+  button.addEventListener('click', () => tapCard(button.dataset.uid));
+});
+
+document.addEventListener('keydown', event => {
+  if (!api || api.state() !== 2) return;
+  const time = nowMs();
+  const x = api.previewX();
+  const y = api.previewY();
+  let handled = true;
+  if (event.key === 'ArrowLeft') {
+    const index = (y * WIDTH + x - 1 + WIDTH * HEIGHT) % (WIDTH * HEIGHT);
+    api.setPreview(index % WIDTH, Math.floor(index / WIDTH), time);
+  } else if (event.key === 'ArrowRight') {
+    const index = (y * WIDTH + x + 1) % (WIDTH * HEIGHT);
+    api.setPreview(index % WIDTH, Math.floor(index / WIDTH), time);
+  } else if (event.key === 'ArrowUp') {
+    api.changeColor(1, time);
+  } else if (event.key === 'ArrowDown') {
+    api.changeColor(-1, time);
+  } else if (event.code === 'Space') {
+    if (api.confirm(time)) {
+      api.finishCommit(1);
+      document.querySelector('#message').textContent = `${activeUid} committed a pixel.`;
+      activeUid = '';
+    }
+  } else {
+    handled = false;
+  }
+  if (handled) event.preventDefault();
+});
+
+async function start() {
+  try {
+    if (typeof createPlaceCore !== 'function')
+      throw new Error('place-core.js is missing. Run simulator/build-simulator.ps1 first.');
+    const module = await createPlaceCore();
+    api = bind(module);
+    if (!api.create(WIDTH, HEIGHT, colors.length, 0, 10000, 20000, 350))
+      throw new Error('The C++ state machine rejected the simulator configuration.');
+    document.querySelector('#message').textContent = 'Tap a card to begin.';
+    setInterval(() => { api.tick(nowMs()); render(); }, 50);
+    render();
+  } catch (error) {
+    document.querySelector('#state').textContent = 'ERROR';
+    document.querySelector('#error').textContent = error.message;
+  }
+}
+
+start();
+</script>
+</body>
+</html>
